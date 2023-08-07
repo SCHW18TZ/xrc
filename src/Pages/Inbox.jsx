@@ -65,15 +65,8 @@ const Inbox = () => {
     <div>
       {ChatList.map((chat) => (
         <div key={chat.id}>
-          {/* <Link to={`/chat/${chat.ChatId}`}>
-            {user.uid === chat.users[0] ? (
-              <h2>{chat.usernames[1]}</h2>
-            ) : (
-              <h2>{chat.usernames[0]}</h2>
-            )}
-          </Link> */}
-          <Link>
-            <h2>{chat.users[1]}</h2>
+          <Link to={`/chat/${chat.id}`}>
+            <h1>{chat.users.filter((user) => user !== useremail)}</h1>
           </Link>
         </div>
       ))}

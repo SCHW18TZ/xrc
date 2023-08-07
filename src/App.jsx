@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home/Home";
 import Login from "./Pages/Login";
-import Chats from "./Pages/Chats";
+import Chat from "./Pages/Chat";
 import Setup from "./Pages/Setup";
 import Search from "./Pages/Search";
 import Navbar from "./Components/Navbar";
@@ -19,9 +19,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="inbox" element={<Inbox />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/:chatid" element={<Chat />} />
         <Route path="/setup" element={<Setup />} />
         <Route path="/:username" element={<UserPage />} />
-        <Route path="/chats" element={<Chats />} />
       </Routes>
     </Router>
   );

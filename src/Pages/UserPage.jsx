@@ -32,7 +32,7 @@ const UserPage = () => {
   getUser();
 
   const createChat = async () => {
-    const chatCollectionRef = collection(db, "Chats");
+    const chatCollectionRef = collection(db, "chats");
     const q = query(
       chatCollectionRef,
       where("users", "array-contains", user.email)

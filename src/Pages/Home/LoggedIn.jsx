@@ -21,8 +21,9 @@ const LoggedIn = ({ user }) => {
     querySnapshot.forEach((doc) => {
       console.log(doc.id, " => ", doc.data());
       if (doc.data().setupComplete === false) {
-        console.log("setup not complete");
         setSetupComplete(false);
+        console.log("setup not complete");
+        navigate("/setup");
       }
       if (doc.data().setupComplete === true) {
         console.log("setup complete");
@@ -31,13 +32,18 @@ const LoggedIn = ({ user }) => {
     });
   };
 
-  if (setupComplete === false) {
-    console.log("setup not complete");
-    navigate("/setup");
-  }
+  // if (setupComplete === false) {
+  //   console.log("setup not complete");
+  //   navigate("/setup");
+  // }
+  // useEffect(() => {
+  //   checkSetup();
+  // }, []);
+
   useEffect(() => {
     checkSetup();
   }, []);
+
   return (
     <div>
       <Toaster />
@@ -51,7 +57,6 @@ const LoggedIn = ({ user }) => {
         <>
           <h1>Setup not complete</h1>
           <Link to="/setup">Click here to complete setup</Link>
-          {navigate("/setup")}
         </>
       )}
     </div>
