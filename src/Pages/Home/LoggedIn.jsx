@@ -31,14 +31,12 @@ const LoggedIn = ({ user }) => {
     });
   };
 
+  if (setupComplete === false) {
+    console.log("setup not complete");
+    navigate("/setup");
+  }
   useEffect(() => {
     checkSetup();
-
-    if (setupComplete === false) {
-      console.log("setup not complete");
-      navigate("/setup");
-      toast.error("Setup not complete");
-    }
   }, []);
   return (
     <div>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { signOut } from "firebase/auth";
+import { checkActionCode, signOut } from "firebase/auth";
 import { auth, db } from "../firebase";
 import {
   collection,
@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const Setup = () => {
   let navigate = useNavigate();
@@ -27,23 +28,25 @@ const Setup = () => {
   const [Error, setError] = useState();
 
   const CheckSetupCompleted = async () => {
+    console.log(user?.email);
     const q = query(userCollectionRef, where("email", "==", user.email));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       console.log(doc.id, " => ", doc.data());
       if (doc.data().setupComplete === true) {
         console.log("setup complete");
-        navigate("/");
+        // navigate("/");
+
+        setCompleted(true);
       }
     });
   };
 
-  // useEffect(() => {
-  //   CheckSetupCompleted();
-  // }, []);
+  CheckSetupCompleted();
 
   const usernameQuery = async (e) => {
     const name = e.target.value;
+    e.preventDefault();
     setnameInput(name);
     console.log(name);
     let q = query(userCollectionRef, where("username", "==", name));
@@ -94,18 +97,33 @@ const Setup = () => {
   console.log(nameavailable);
   return (
     <div>
-      <h1>Setup</h1>
-      <Toaster />
-      <form onSubmit={submitUsername}>
-        <label>Username: </label>
-        <input
-          type="text"
-          onChange={(e) => {
-            usernameQuery(e);
-          }}
-        />
-        <button type="submit"> Submit</button>
-      </form>
+      {user ? (
+        <>
+          {Completed ? (
+            <>
+              <h1>You've already completed account setup</h1>
+              <Link to={"/"}>Click here to go home</Link>
+            </>
+          ) : (
+            <>
+              <h1>Setup</h1>
+              <Toaster />
+              <form onSubmit={submitUsername}>
+                <label>Username: </label>
+                <input
+                  type="text"
+                  onChange={(e) => {
+                    usernameQuery(e);
+                  }}
+                />
+                <button type="submit"> Submit</button>
+              </form>
+            </>
+          )}
+        </>
+      ) : (
+        <h1>no user</h1>
+      )}
     </div>
   );
 };
