@@ -8,6 +8,7 @@ import Search from "./Pages/Search";
 import Navbar from "./Components/Navbar";
 import "./App.css";
 import UserPage from "./Pages/UserPage";
+import Inbox from "./Pages/Inbox";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="inbox" element={<Inbox />} />
         <Route path="/search" element={<Search />} />
         <Route path="/setup" element={<Setup />} />
         <Route path="/:username" element={<UserPage />} />

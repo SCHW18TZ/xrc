@@ -4,7 +4,9 @@ import { useParams } from "react-router-dom";
 import { auth, db } from "../firebase";
 import { useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 const UserPage = () => {
   const [user, loading, error] = useAuthState(auth);
@@ -29,8 +31,31 @@ const UserPage = () => {
 
   getUser();
 
+  const createChat = async () => {
+    const chatCollectionRef = collection(db, "Chats");
+    const q = query(
+      chatCollectionRef,
+      where("users", "array-contains", user.email)
+    );
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      addDoc(chatCollectionRef, {
+        users: [user.email, UserData.email],
+        chatId: user.uid + UserData.uid,
+        createdAt: new Date().getTime(),
+        messages: [],
+      });
+      return;
+      toast.success("Chat created");
+    }
+    querySnapshot.forEach((doc) => {
+      console.log(doc.id, " => ", doc.data());
+    });
+  };
+
   return (
     <>
+      <Toaster />
       {user ? (
         <div className="userPage">
           {Error ? (
@@ -38,8 +63,9 @@ const UserPage = () => {
           ) : (
             <>
               <h1>User Page</h1>
-              <h2>{UserData.displayName}</h2>
-              <h2>{UserData.username}</h2>
+              <h2>{UserData?.displayName}</h2>
+              <h2>{UserData?.username}</h2>
+              <button onClick={createChat}>Message {UserData?.username}</button>
             </>
           )}
         </div>
