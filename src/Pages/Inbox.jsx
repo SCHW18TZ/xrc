@@ -1,21 +1,27 @@
 import React from "react";
-import { useParams } from "react-router-dom";
-import { auth, db } from "../firebase";
-import { useState } from "react";
+import { db, auth } from "../firebase";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  where,
+  getDocs,
+  query,
+  onSnapshot,
+  orderBy,
+} from "firebase/firestore";
+import { Link } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
-import { Toaster } from "react-hot-toast";
-import { useEffect } from "react";
-import { toast } from "react-hot-toast";
+import { useState, useEffect } from "react";
 
 const Inbox = () => {
   const [user, loading, error] = useAuthState(auth);
   const [Error, setError] = useState();
-  const [Chats, setChats] = useState([]);
+  const [ChatList, setChatList] = useState([]);
 
   const useremail = user?.email;
   const getChats = async () => {
-    const chatCollectionRef = collection(db, "Chats");
+    const chatCollectionRef = collection(db, "chats");
     const q = query(
       chatCollectionRef,
       where("users", "array-contains", "schwitz6969@gmail.com")
@@ -27,36 +33,50 @@ const Inbox = () => {
       return;
     }
     querySnapshot.forEach((doc) => {
-      setChats(doc.data());
+      let chats = [];
+      snapshot.forEach((doc) => {
+        chats.push({ ...doc.data(), id: doc.id });
+      });
+      setChatList(chats);
     });
   };
 
-  console.log(Chats);
+  console.log(ChatList);
   useEffect(() => {
-    getChats();
-  }, []);
+    if (!user) return;
+    const ChatCollectionRef = collection(db, "Chats");
+    const queryChat = query(
+      ChatCollectionRef,
+      where("users", "array-contains", user.email)
+    );
 
-  // Loop over the chats and display them
-  // If there are no chats, display a message saying "No chats"
+    const unsuscribe = onSnapshot(queryChat, (snapshot) => {
+      let chats = [];
+      snapshot.forEach((doc) => {
+        chats.push({ ...doc.data(), id: doc.id });
+      });
+      setChatList(chats);
+    });
 
-  //   for (let chat in Chats) {
-  //     console.log(chat);
-  //     console.log(Chats[chat]);
-  //   }
+    return () => unsuscribe();
+  }, [user]);
 
   return (
     <div>
-      <h1>Chats</h1>
-
-      {Chats ? (
-        <>
-          {Chats?.map((chat) => {
-            return <h1>{chat}</h1>;
-          })}
-        </>
-      ) : (
-        <h1>no chats</h1>
-      )}
+      {ChatList.map((chat) => (
+        <div key={chat.id}>
+          {/* <Link to={`/chat/${chat.ChatId}`}>
+            {user.uid === chat.users[0] ? (
+              <h2>{chat.usernames[1]}</h2>
+            ) : (
+              <h2>{chat.usernames[0]}</h2>
+            )}
+          </Link> */}
+          <Link>
+            <h2>{chat.users[1]}</h2>
+          </Link>
+        </div>
+      ))}
     </div>
   );
 };
